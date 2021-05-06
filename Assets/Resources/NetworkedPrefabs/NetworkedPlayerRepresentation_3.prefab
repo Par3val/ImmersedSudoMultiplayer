@@ -323,9 +323,13 @@ MonoBehaviour:
   headRep: {fileID: 545441414095258493}
   leftHandRep: {fileID: 545441414791890326}
   rightHandRep: {fileID: 545441414670729369}
+  leftShoulderRep: {fileID: 8972569766708542454}
+  rightShoulderRep: {fileID: 6968911167123047034}
+  leftElbowRep: {fileID: 5880389208910110398}
+  rightElbowRep: {fileID: 8844624840513789163}
+  quality: 3
   isSpeaking: 0
   id: 0
-  quality: 1
 --- !u!1 &1691938092050795549
 GameObject:
   m_ObjectHideFlags: 0
@@ -418,6 +422,7 @@ GameObject:
   - component: {fileID: 9063245876115630762}
   - component: {fileID: 8444427043072041464}
   - component: {fileID: 9218885396870892034}
+  - component: {fileID: 6145192823906514440}
   m_Layer: 0
   m_Name: Sphere
   m_TagString: Untagged
@@ -491,6 +496,19 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!135 &6145192823906514440
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4473423715176538954}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.49999997
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &5175258639385501375
 GameObject:
   m_ObjectHideFlags: 0

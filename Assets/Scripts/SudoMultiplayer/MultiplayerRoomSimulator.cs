@@ -12,9 +12,11 @@ namespace SudoNetworking
 		public static uint debugPlayerIndex = 0;
 
 		public XRTools.Rigs.Rig debugRig;
+		public LocalPlayer localPlayer;
 		public Transform spawnOrigin;
 		public int numSimulatedStudents = 15;
 
+		RigData debugRigData;
 		PoseData debugHeadPose;
 		PoseData debugLeftPose;
 		PoseData debugRightPose;
@@ -32,14 +34,17 @@ namespace SudoNetworking
 		{
 			if (debugRig)
 			{
-				debugHeadPose = new PoseData(debugRig.Headset.transform.localPosition, debugRig.Headset.transform.localRotation);
-				debugLeftPose = new PoseData(debugRig.LeftController.transform.localPosition, debugRig.LeftController.transform.localRotation);
-				debugRightPose = new PoseData(debugRig.RightController.transform.localPosition, debugRig.RightController.transform.localRotation);
-
+				debugRigData = new RigData(new PoseData(localPlayer.headRep.localPosition, localPlayer.headRep.localRotation),
+							new PoseData(localPlayer.leftHandRep.localPosition, localPlayer.leftHandRep.localRotation),
+							new PoseData(localPlayer.rightHandRep.localPosition, localPlayer.rightHandRep.localRotation),
+							new PoseData(localPlayer.leftShoulderRep.localPosition, localPlayer.leftShoulderRep.localRotation),
+							new PoseData(localPlayer.rightShoulderRep.localPosition, localPlayer.rightShoulderRep.localRotation),
+							new PoseData(localPlayer.leftElbowRep.localPosition, localPlayer.leftElbowRep.localRotation),
+							new PoseData(localPlayer.rightElbowRep.localPosition, localPlayer.rightElbowRep.localRotation));
 
 				foreach (var player in players)
 				{
-					SetRigDataByID(player.id, new RigData(debugHeadPose, debugLeftPose, debugRightPose));
+					SetRigDataByID(player.id, debugRigData);
 				}
 			}
 		}

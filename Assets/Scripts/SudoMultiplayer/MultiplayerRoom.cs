@@ -15,6 +15,7 @@ namespace SudoNetworking
 		[System.Serializable]
 		public struct PoseData
 		{
+			public static readonly PoseData empty = new PoseData(Vector3.zero, Quaternion.identity);
 			Vector3 pos;
 			Quaternion rot;
 
@@ -36,14 +37,28 @@ namespace SudoNetworking
 		public class RigData
 		{
 			public PoseData Head { get; set; }
-			public PoseData Left { get; set; }
-			public PoseData Right { get; set; }
+			public PoseData? Left { get; set; }
+			public PoseData? Right { get; set; }
 
 			public PoseData? LeftShoulder { get; set; }
 			public PoseData? RightShoulder { get; set; }
 
 			public PoseData? LeftElbow { get; set; }
 			public PoseData? RightElbow { get; set; }
+
+			public RigData(PoseData _head)
+			{
+				Head = _head;
+				Left = null;
+				Right = null;
+
+				LeftShoulder = null;
+				RightShoulder = null;
+
+				LeftElbow = null;
+				RightElbow = null;
+
+			}
 
 			public RigData(PoseData _head, PoseData _left, PoseData _right)
 			{
@@ -115,6 +130,9 @@ namespace SudoNetworking
 
 			players.Add(instantiatedPlayer);
 			rigsData.Add(instantiatedPlayer.id, instantiatedPlayer.GetRigData());
+			instantiatedPlayer.gameObject.AddComponent<StudentController>();
+
+
 			//if seat system was implemented positon would be updated here 
 			//insead it is implemnted in the override in MultiplayerRoomSimulator.cs
 			//
@@ -122,7 +140,6 @@ namespace SudoNetworking
 			//instantiatedPlayer.transform.localRotation *= GetSeatRotation();
 
 		}
-
 		public virtual void PlayerDisconnected(uint id)
 		{
 			foreach (NetworkedPlayer player in players)
@@ -132,14 +149,16 @@ namespace SudoNetworking
 					if (speakingPlayerIds.Contains(player.id))
 						VoiceChatManager.RemoveVoiceConnection(player.id);
 
-					NetworkingManager.Destroy(player.gameObject);
 					players.Remove(player);
+					rigsData.Remove(player.id);
 
+					NetworkingManager.Destroy(player.gameObject);
 					return;
 				}
 
 			}
 		}
+
 
 		public virtual void ChangePlayerQuality(uint id, int newQuality)
 		{
@@ -156,10 +175,12 @@ namespace SudoNetworking
 				playerCurrent.transform.rotation,
 				playerCurrent.transform.parent).GetComponent<NetworkedPlayer>();
 
+			newPlayer.gameObject.AddComponent<StudentController>();
+
 			newPlayer.id = playerCurrent.id;
 			newPlayer.quality = newQuality;
 			newPlayer.isSpeaking = playerCurrent.isSpeaking;
-
+			newPlayer.SetRigDataQuality(newQuality);
 			players[players.IndexOf(playerCurrent)] = newPlayer;
 
 			NetworkingManager.Destroy(playerCurrent.gameObject);
@@ -170,12 +191,18 @@ namespace SudoNetworking
 			VoiceChatManager.InitializeVoiceConnection(id);
 
 			speakingPlayerIds.Add(id);
+			ChangePlayerQuality(id, 3);
+
+			GetPlayerByID(id).isSpeaking = true;
 		}
 		public virtual void RemovePlayerVoice(uint id)
 		{
 			VoiceChatManager.RemoveVoiceConnection(id);
 
 			speakingPlayerIds.Remove(id);
+			ChangePlayerQuality(id, 1);
+
+			GetPlayerByID(id).isSpeaking = false;
 		}
 
 		public virtual Vector3 GetSeatPositon(int seatIndex = -1)

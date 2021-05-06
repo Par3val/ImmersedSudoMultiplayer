@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using SudoNetworking;
 
-public class StudentControlsManager : MonoBehaviour
+public class StudentController : MonoBehaviour
 {
 	public void RequestVoice()
 	{

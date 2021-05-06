@@ -6,33 +6,59 @@ using static SudoNetworking.MultiplayerRoom;
 namespace SudoNetworking
 {
 	public class LocalPlayer : Player
-	{	
-		public PoseData LeftShoulder { get; set; }
-		public PoseData RightShoulder { get; set; }
+	{
+		public override void OnEnable()
+		{
+			rigData = new RigData(new PoseData(headRep.localPosition, headRep.localRotation),
+							new PoseData(leftHandRep.localPosition, leftHandRep.localRotation),
+							new PoseData(rightHandRep.localPosition, rightHandRep.localRotation),
+							new PoseData(leftShoulderRep.localPosition, leftShoulderRep.localRotation),
+							new PoseData(rightShoulderRep.localPosition, rightShoulderRep.localRotation),
+							new PoseData(leftElbowRep.localPosition, leftElbowRep.localRotation),
+							new PoseData(rightElbowRep.localPosition, rightElbowRep.localRotation));
+		}
 
-		public PoseData LeftElbow { get; set; }
-		public PoseData RightElbow { get; set; }
-		
+		public override RigData GetRigData()
+		{
+			return rigData;
+		}
 
 		private void Update()
 		{
 			UpdatePoses();
+			//TransmitRigData();
 		}
 
 		public void UpdatePoses()
 		{
+			if (quality > 2)
+			{
+				rigData.LeftShoulder.Value.SetPosition(leftShoulderRep.localPosition);
+				rigData.LeftShoulder.Value.SetRotation(leftShoulderRep.localRotation);
+
+				rigData.RightShoulder.Value.SetPosition(rightShoulderRep.localPosition);
+				rigData.RightShoulder.Value.SetRotation(rightShoulderRep.localRotation);
+
+				rigData.LeftElbow.Value.SetPosition(leftElbowRep.localPosition);
+				rigData.LeftElbow.Value.SetRotation(leftElbowRep.localRotation);
+
+				rigData.RightElbow.Value.SetPosition(rightElbowRep.localPosition);
+				rigData.RightElbow.Value.SetRotation(rightElbowRep.localRotation);
+			}
+			if (quality > 1)
+			{
+				rigData.Left.Value.SetPosition(leftHandRep.localPosition);
+				rigData.Left.Value.SetRotation(leftHandRep.localRotation);
+
+				rigData.Right.Value.SetPosition(rightHandRep.localPosition);
+				rigData.Right.Value.SetRotation(rightHandRep.localRotation);
+			}
 
 			rigData.Head.SetPosition(headRep.localPosition);
 			rigData.Head.SetRotation(headRep.localRotation);
-
-			rigData.Left.SetPosition(leftHandRep.localPosition);
-			rigData.Left.SetRotation(leftHandRep.localRotation);
-
-			rigData.Right.SetPosition(rightHandRep.localPosition);
-			rigData.Right.SetRotation(rightHandRep.localRotation);
 		}
 
-		public void TransmitRigData(Vector3 playerPos, PoseData head, PoseData handL, PoseData handR)
+		public void TransmitRigData()
 		{
 			MultiplayerRoom.instance.SetRigDataByID(id, rigData);
 		}
