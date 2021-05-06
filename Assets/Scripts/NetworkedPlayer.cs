@@ -56,9 +56,6 @@ namespace SudoNetworking
 			else if (quality == 3)
 				rigData = new RigData(new PoseData(headRep.localPosition, headRep.localRotation),
 							new PoseData(leftHandRep.localPosition, leftHandRep.localRotation),
-							new PoseData(rightHandRep.localPosition, rightHandRep.localRotation));
-			new RigData(new PoseData(headRep.localPosition, headRep.localRotation),
-							new PoseData(leftHandRep.localPosition, leftHandRep.localRotation),
 							new PoseData(rightHandRep.localPosition, rightHandRep.localRotation),
 							new PoseData(leftShoulderRep.localPosition, leftShoulderRep.localRotation),
 							new PoseData(rightShoulderRep.localPosition, rightShoulderRep.localRotation),
