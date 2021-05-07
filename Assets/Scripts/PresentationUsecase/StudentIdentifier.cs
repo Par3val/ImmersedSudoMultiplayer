@@ -15,7 +15,11 @@ public class StudentIdentifier : MonoBehaviour
 	public StudentController targetStudent;
 	public LineRenderer visual;
 	public float maxDistance = 100;
-	public FloatMap selectMap;
+	public Color defaultColor = Color.white;
+	public Color selectColor = Color.red;
+
+	public FloatMap selectMapLeft;
+	public FloatMap selectMapRight;
 	public StudentSelectEvent studentSelected = new StudentSelectEvent();
 	InteractableRaw thisInteractable;
 	RaycastHit hitData;
@@ -23,23 +27,18 @@ public class StudentIdentifier : MonoBehaviour
 	private void OnEnable()
 	{
 		thisInteractable = GetComponent<InteractableRaw>();
-		selectMap.Activated.AddListener(Select);
+
 
 		thisInteractable.Grabbed.AddListener(Grabbed);
 		thisInteractable.UnGrabbed.AddListener(UnGrabbed);
 
 		if (!visual)
 			visual = GetComponentInChildren<LineRenderer>();
-
-
-		if (!selectMap)
-			selectMap = GetComponentInChildren<FloatMap>();
+		visual.enabled = false;
 	}
-
+	
 	private void OnDisable()
 	{
-		selectMap.Activated.RemoveListener(Select);
-
 		thisInteractable.Grabbed.RemoveListener(Grabbed);
 		thisInteractable.UnGrabbed.RemoveListener(UnGrabbed);
 	}
@@ -97,19 +96,39 @@ public class StudentIdentifier : MonoBehaviour
 
 	public void Grabbed(InteractorRaw interactor)
 	{
-		selectMap.hand = interactor.inputManager.inputType;
-		selectMap.RefreshFeature();
+		visual.enabled = true;
+		if (interactor.inputManager.handedness == InputManagerNew.hands.Left)
+		{
+			selectMapLeft.Activated.AddListener(Select);
+			selectMapLeft.Deactivated.AddListener(UnSelected);
+		}
+		else
+		{
+			selectMapRight.Activated.AddListener(Select);
+			selectMapRight.Deactivated.AddListener(UnSelected);
+		}
 	}
 
 	public void UnGrabbed(InteractorRaw interactor)
 	{
-		selectMap.hand = UnityEngine.XR.XRNode.Head;
-		selectMap.RefreshFeature();
+		visual.enabled = false;
+		if (interactor.inputManager.handedness == InputManagerNew.hands.Left)
+		{
+			selectMapLeft.Activated.RemoveListener(Select);
+			selectMapLeft.Deactivated.RemoveListener(UnSelected);
+		}
+		else
+		{
+			selectMapRight.Activated.RemoveListener(Select);
+			selectMapRight.Deactivated.RemoveListener(UnSelected);
+		}
 	}
 
 	public void Select()
 	{
-		Debug.Log("Selected");
+		visual.startColor = selectColor;
+		visual.endColor = selectColor;
+
 		if (!targetStudent)
 			return;
 		GameObject selectedStudent = targetStudent.gameObject;
@@ -119,6 +138,11 @@ public class StudentIdentifier : MonoBehaviour
 		var outline = selectedStudent.GetComponent<QuickOutline>();
 		outline.OutlineColor = Color.red;
 		outline.OutlineWidth *= 1.3f;
+	}
 
+	public void UnSelected()
+	{
+		visual.startColor = defaultColor;
+		visual.endColor = defaultColor;
 	}
 }

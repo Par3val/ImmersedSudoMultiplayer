@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static SudoNetworking.NetworkingData;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -9,57 +10,129 @@ namespace SudoNetworking
 {
 	public class MultiplayerRoomSimulator : MultiplayerRoom
 	{
-		public static uint debugPlayerIndex = 0;
-
-		public XRTools.Rigs.Rig debugRig;
-		public LocalPlayer localPlayer;
+		public static int debugPlayerIndex = 0;
+		public static bool debugAsTeacher = true;
+		public Player DebugPlayer;
 		public Transform spawnOrigin;
 		public int numSimulatedStudents = 15;
 
-		RigData debugRigData;
 		PoseData debugHeadPose;
 		PoseData debugLeftPose;
 		PoseData debugRightPose;
 
+
 		protected override void Start()
 		{
+			if (debugAsTeacher)
+				base.PlayerConnect(NetworkingManager.GetNewPlayerID(), true);
+			else
+				PlayerConnect(NetworkingManager.GetNewPlayerID(), true);
+
+			DebugPlayer = players[players.Count - 1];
+
+			int playerIndex = Random.Range(0, numSimulatedStudents);
+			if (debugAsTeacher)
+				playerIndex = -1;
+
 			base.Start();
-			for (uint i = 1; i < numSimulatedStudents + 1; i++)
+			for (int i = 1; i < numSimulatedStudents + 1; i++)
 			{
-				PlayerConnected(i);
+				if (playerIndex.Equals(i))
+				{
+					base.PlayerConnect(NetworkingManager.GetNewPlayerID(), false);
+					players[players.Count - 1].transform.position = GetSeatPositon();
+					players[players.Count - 1].transform.rotation *= GetSeatRotation();
+					DebugPlayer = players[players.Count - 1];
+				}
+				else
+					PlayerConnect(NetworkingManager.GetNewPlayerID(), false);
 			}
+		}
+
+		private void Awake()
+		{
+			//Resources.Load("SimulatorVRPlayer")
 		}
 
 		private void Update()
 		{
-			if (debugRig)
+			if (DebugPlayer)
 			{
-				debugRigData = new RigData(new PoseData(localPlayer.headRep.localPosition, localPlayer.headRep.localRotation),
-							new PoseData(localPlayer.leftHandRep.localPosition, localPlayer.leftHandRep.localRotation),
-							new PoseData(localPlayer.rightHandRep.localPosition, localPlayer.rightHandRep.localRotation),
-							new PoseData(localPlayer.leftShoulderRep.localPosition, localPlayer.leftShoulderRep.localRotation),
-							new PoseData(localPlayer.rightShoulderRep.localPosition, localPlayer.rightShoulderRep.localRotation),
-							new PoseData(localPlayer.leftElbowRep.localPosition, localPlayer.leftElbowRep.localRotation),
-							new PoseData(localPlayer.rightElbowRep.localPosition, localPlayer.rightElbowRep.localRotation));
+				RigData debugRigData = DebugPlayer.GetRigData();
 
-				foreach (var player in players)
+				RigData tempData = new RigData(debugRigData.Head);
+				foreach (Player player in players)
 				{
-					SetRigDataByID(player.id, debugRigData);
+					if (player.quality == 1)
+					{
+						tempData = new RigData(debugRigData.Head);
+					}
+					if (player.quality == 2)
+					{
+						tempData = new RigData(debugRigData.Head,
+												debugRigData.Left,
+												debugRigData.Right);
+					}
+					else if (player.quality == 3)
+					{
+
+						tempData = new RigData(debugRigData.Head,
+												debugRigData.Left,
+												debugRigData.Right,
+												debugRigData.LeftShoulder,
+												debugRigData.RightShoulder,
+												debugRigData.LeftElbow,
+												debugRigData.RightElbow);
+					}
+					NetworkingManager.SetRigDataByID(player.id, tempData);
 				}
 			}
 		}
 
-		public override void PlayerConnected(uint id)
+		public override void PlayerConnect(int id, bool isTeacher)
 		{
-			base.PlayerConnected(id);
+			var loadedPlayer = GetSimulatedPlayer(isTeacher);
+			Player instantiatedPlayer = NetworkingManager.Instantiate(loadedPlayer).GetComponent<Player>();
+			instantiatedPlayer.id = NetworkingManager.GetNewPlayerID();
+			teacherId = instantiatedPlayer.id;
+
+			players.Add(instantiatedPlayer);
+			NetworkingManager.rigsData.Add(instantiatedPlayer.id, instantiatedPlayer.GetRigData());
 
 			//to be replaced by a seat system where the enviornement puts forth a list of available seats in the enviorment
-			//and moves the player at an available seat or one they choose before connecting
+			//and moves the player at an available seat or one they choose before/while connected
+
+			if (!isTeacher)
+			{
+				players[players.Count - 1].transform.position = GetSeatPositon();
+				players[players.Count - 1].transform.localRotation *= GetSeatRotation();
+			}
+
+		}
 
 
-			players[players.Count - 1].transform.position = GetSeatPositon();
-			players[players.Count - 1].transform.localRotation *= GetSeatRotation();
+		public override void ChangePlayerQuality(int id, int newQuality)
+		{
+			if (newQuality < 1)
+				newQuality = 1;
+			else if (newQuality > 3)
+				newQuality = 3;
 
+			var playerCurrent = GetPlayerByID(id);
+
+			GameObject newPrefab = GetSimulatedStudentAvatarByQuality(newQuality);
+			NetworkedPlayerSimulator newPlayer = NetworkingManager.Instantiate(newPrefab,
+				playerCurrent.transform.position,
+				playerCurrent.transform.rotation,
+				playerCurrent.transform.parent).GetComponent<NetworkedPlayerSimulator>();
+
+			newPlayer.id = playerCurrent.id;
+			newPlayer.quality = newQuality;
+			newPlayer.isSpeaking = playerCurrent.isSpeaking;
+			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			players[players.IndexOf(playerCurrent)] = newPlayer;
+
+			NetworkingManager.Destroy(playerCurrent.gameObject);
 		}
 
 		public override Vector3 GetSeatPositon(int seatIndex = -1)
@@ -67,8 +140,8 @@ namespace SudoNetworking
 			if (seatIndex.Equals(-1))
 			{
 				//temp layout logic 
-				uint newPlayerID = players[players.Count - 1].id;
-				return spawnOrigin.position + new Vector3((newPlayerID % 5) * 1.8f, (newPlayerID / 5) * 0.2f, (newPlayerID / 5) * 2.2f);
+				int newPlayerID = players[players.Count - 1].id - 1;
+				return spawnOrigin.position + new Vector3((newPlayerID % 15) * 1.8f, (newPlayerID / 15) * 0.2f, (newPlayerID / 15) * 2.2f);
 			}
 
 
@@ -87,6 +160,24 @@ namespace SudoNetworking
 			Debug.LogError($"Seat Index System Not Implemented (expected -1 received {seatIndex})", gameObject);
 			return Quaternion.identity;
 		}
+
+		public static GameObject GetSimulatedPlayer(bool isTeacher, int quality = 1)
+		{
+			if (isTeacher)
+				return (GameObject)Resources.Load("SimulatedTeacherPlayer");
+
+			return GetSimulatedStudentAvatarByQuality(quality);
+		}
+		public static GameObject GetSimulatedStudentAvatarByQuality(int quality)
+		{
+			if (quality < 1)
+				quality = 1;
+			else if (quality > 3)
+				quality = 3;
+
+			return (GameObject)Resources.Load("SimulatedStudentPlayer_" + quality);
+		}
+
 	}
 
 #if UNITY_EDITOR
@@ -109,20 +200,20 @@ namespace SudoNetworking
 			{
 				while (!previousNumStudents.Equals(simulator.numSimulatedStudents))
 				{
-					simulator.PlayerConnected((uint)simulator.players.Count + 1);
+					simulator.PlayerConnect((int)MultiplayerRoom.players.Count + 1, false);
 					previousNumStudents++;
 				}
 
 				EditorGUILayout.BeginHorizontal();
 				if (GUILayout.Button(new GUIContent(" ConnectPlayer", "REALITY IS A LIE")))
 				{
-					simulator.PlayerConnected((uint)simulator.players.Count + 1);
+					simulator.PlayerConnect((int)MultiplayerRoom.players.Count + 1, false);
 					simulator.numSimulatedStudents++;
 				}
 
 				if (GUILayout.Button("DisconnectPlayer"))
 				{
-					simulator.PlayerDisconnected((uint)simulator.players.Count);
+					simulator.PlayerDisconnect((int)MultiplayerRoom.players.Count);
 
 					simulator.numSimulatedStudents--;
 				}
