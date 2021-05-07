@@ -1,5 +1,62 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7198092427876052420
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7565991315242488906}
+  - component: {fileID: 796667480936144242}
+  m_Layer: 0
+  m_Name: SelectInputMapRight
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7565991315242488906
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7198092427876052420}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 7753855473398577133}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &796667480936144242
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7198092427876052420}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 924e2424ec4a30c41a736d152505c88c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hand: 5
+  mapName: Select Right
+  editorOpen: 1
+  floatMap: 0
+  activeRange: {x: 0.8, y: 1}
+  Activated:
+    m_PersistentCalls:
+      m_Calls: []
+  Deactivated:
+    m_PersistentCalls:
+      m_Calls: []
+  StateChanged:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7753855472926039828
 GameObject:
   m_ObjectHideFlags: 0
@@ -160,6 +217,7 @@ Transform:
   - {fileID: 7753855473075156494}
   - {fileID: 7753855473844303740}
   - {fileID: 7753855474404593899}
+  - {fileID: 7565991315242488906}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: -42.602, y: 0, z: 0}
@@ -258,7 +316,10 @@ MonoBehaviour:
   targetStudent: {fileID: 0}
   visual: {fileID: 7753855473844303715}
   maxDistance: 100
-  selectMap: {fileID: 7753855474404593898}
+  defaultColor: {r: 1, g: 1, b: 1, a: 1}
+  selectColor: {r: 1, g: 0, b: 0, a: 1}
+  selectMapLeft: {fileID: 7753855474404593898}
+  selectMapRight: {fileID: 796667480936144242}
   studentSelected:
     m_PersistentCalls:
       m_Calls: []
@@ -402,7 +463,7 @@ GameObject:
   - component: {fileID: 7753855474404593899}
   - component: {fileID: 7753855474404593898}
   m_Layer: 0
-  m_Name: SelectInputMap
+  m_Name: SelectInputMapLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -434,8 +495,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 924e2424ec4a30c41a736d152505c88c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hand: 0
-  mapName: Select
+  hand: 4
+  mapName: Select Left
   editorOpen: 1
   floatMap: 0
   activeRange: {x: 0.8, y: 1}

@@ -40,9 +40,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 545441415666839433}
-  - component: {fileID: 8098321951747510960}
+  - component: {fileID: 1848384937137994295}
+  - component: {fileID: 4235545550198422624}
   m_Layer: 0
-  m_Name: NetworkedPlayerRepresentation_1
+  m_Name: SimulatedStudentPlayer_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -63,7 +64,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8098321951747510960
+--- !u!114 &1848384937137994295
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 545441415666839432}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c4ec4ad25486d04b99ffa6a5db66bc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 4235545550198422624}
+--- !u!114 &4235545550198422624
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -84,7 +98,7 @@ MonoBehaviour:
   rightElbowRep: {fileID: 0}
   quality: 1
   isSpeaking: 0
-  id: 0
+  id: -1
 --- !u!1 &4473423715176538954
 GameObject:
   m_ObjectHideFlags: 0
@@ -96,7 +110,7 @@ GameObject:
   - component: {fileID: 9063245876115630762}
   - component: {fileID: 8444427043072041464}
   - component: {fileID: 9218885396870892034}
-  - component: {fileID: 3509026926391217651}
+  - component: {fileID: 6145192823906514440}
   m_Layer: 0
   m_Name: Sphere
   m_TagString: Untagged
@@ -145,7 +159,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 393e4379bf65c2b45bb50b3b1e5fe2f9, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -167,7 +181,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &3509026926391217651
+--- !u!135 &6145192823906514440
 SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
