@@ -132,10 +132,7 @@ namespace SudoNetworking
 			VoiceChatManager.RemoveVoiceConnection(id);
 
 			speakingPlayerIds.Remove(id);
-
-			if (speakingPlayerIds.Count > 5 && GetPlayerByID(id).quality == 3)
-				ChangePlayerQuality(speakingPlayerIds[speakingPlayerIds.Count - 1], 3);
-
+			
 			ChangePlayerQuality(id, 1);
 
 			GetPlayerByID(id).isSpeaking = false;

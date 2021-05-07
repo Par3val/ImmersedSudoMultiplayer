@@ -1,0 +1,12 @@
+Interactor
+================
+>*needs a new name*
+
+
+
+```cs
+    public void Grab(InteractableRaw interactable)
+    {
+      grab.Grab(interactable);
+    }
+```

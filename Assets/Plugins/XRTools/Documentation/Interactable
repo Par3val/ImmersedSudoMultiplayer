@@ -1,0 +1,77 @@
+Interactable
+==============
+**[Requires Rigidbody, CollisionTrackerNew]**
+
+![InteractableRaw Inspector](/Pictures/InteractableRaw.png)
+
+|Settings |       |
+| -------| ------- |
+| Release<br>(enum) | First Available, Toggle (WIP), Event (WIP) |
+| Follow<br>(enum) | Transform, Rigidbody, Joint (WIP) |
+| Attach<br>(enum) | Origin, Grab Point, Constant Offset |
+| Secondary <br>(enum) | None, Switch, LookAt, Scale |
+| Precise Rotate<br>(bool) | Transform: as if dragged by the grab point <br><br> Rigidbody: freaks out but probably needs <br> to not move |
+|Inherit Kinematic<br>(bool) | Wether to override the local Rigidbody.isKinematic <br> in favor of the Interactor's|
+
+## Release
+>
+>**When the object will release from the Interactor**<br>
+>
+>**First Available**<br>
+- The frist time the Grab Trigger leaves its active area
+  the ungrab will be called.<br>
+  i.e. <.85 (0-1)
+>
+>**Togle**<br>
+ - The GRab trigger need to be let go before an ungrab
+
+
+
+
+## Follow
+>
+>**The method the object will use to follow the Interactor**<br>
+>
+>**Transform**<br>
+- An [Action] WIll Directly Update The Position & Rotation
+  right before the camera renders
+>
+>**Rigidbody**<br>
+ - An [Action] WIll add velocity and anglugar velocity to make
+   the object follow the interactor every FixedUpdate
+
+
+
+
+ ## Attach
+ >
+ >**How the Object will offset relative to the Interactor Origin**
+ >
+ >**Origin**<br>
+ - No Offset, the Transform of the Interactable will match
+   the Interactor
+ >
+ >**Grab Point**<br>
+- At the moment of grabbing it saves the offste from the Interactor
+  and will maintain that Offset<?>
+>
+>**Constant Offset**<br>
+ - will offset the Interactable by a predermined Position & Rotation
+
+
+
+## Secondary
+>
+>**How the Object will react to being grabbed by the off-hand**
+>
+>**None**<br>
+- Nothing
+>
+>**Swap**<br>
+- They object switches to the off-hand, back and forth
+>
+>**LookAt**<br>
+- The Forward direction of the Interactable will face the off-hand
+>
+>**Scale**<br>
+- [TBD]
